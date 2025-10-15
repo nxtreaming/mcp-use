@@ -553,5 +553,5 @@ Thanks to all our amazing contributors!
 <div align="center">
   <strong>Built with ❤️ by the MCP-Use community</strong>
   <br/>
-  <sub>Python • TypeScript • MCP Protocol</sub>
+  <sub>San Francisco | Zürich</sub>
 </div>
