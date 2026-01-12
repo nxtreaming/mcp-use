@@ -376,12 +376,22 @@ fi
 
 # Create/override deno.json with mcp-use dependency
 print_info "Creating deno.json with mcp-use@$MCP_USE_VERSION dependency..."
+# Note: Hybrid zod mapping to satisfy conflicting requirements:
+# - @modelcontextprotocol/sdk imports "zod/v3" and needs "z.custom" (available in Zod v3)
+# - Other deps import "zod/v4" and "zod/v4-mini"
+# - We map "zod" and "zod/v3" to Zod v3, and "zod/v4" variants to Zod v4
+# - We use esm.sh for all zod imports to match the deployment environment
 cat > "$FUNCTION_DIR/deno.json" << EOF
 {
   "imports": {
-    "mcp-use/client": "https://esm.sh/mcp-use@${MCP_USE_VERSION}/client",
-    "mcp-use/server": "https://esm.sh/mcp-use@${MCP_USE_VERSION}/server",
-    "zod": "npm:zod@^4.2.0"
+    "mcp-use/client": "https://esm.sh/mcp-use@${MCP_USE_VERSION}/client?no-dts&external=zod",
+    "mcp-use/server": "https://esm.sh/mcp-use@${MCP_USE_VERSION}/server?no-dts&external=zod",
+    "zod": "https://esm.sh/zod@3.24.4",
+    "zod/v3": "https://esm.sh/zod@3.24.4",
+    "zod/v4": "https://esm.sh/zod@4.2.0",
+    "zod/v4-mini": "https://esm.sh/zod@4.2.0",
+    "zod/v4/mini": "https://esm.sh/zod@4.2.0",
+    "zod/v4/core": "https://esm.sh/zod@4.2.0"
   }
 }
 
