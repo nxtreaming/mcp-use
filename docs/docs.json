@@ -440,18 +440,6 @@
                 ]
               }
             ]
-          },
-          {
-            "tab": "Blog",
-            "icon": "book",
-            "groups": [
-              {
-                "group": "Blog",
-                "pages": [
-                  "python/blog/middleware"
-                ]
-              }
-            ]
           }
         ]
       },
@@ -678,7 +666,7 @@
   "logo": {
     "light": "/logo/light.svg",
     "dark": "/logo/dark.svg",
-    "href": "https://mcp-use.com"
+    "href": "https://mcp-use.com/docs"
   },
   "navbar": {
     "links": [
