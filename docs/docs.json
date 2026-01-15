@@ -657,6 +657,29 @@
             ]
           }
         ]
+      },
+      {
+        "product": "Inspector",
+        "description": "Debug and test MCP Apps & Servers",
+        "icon": "/images/inspector-logo.svg",
+        "groups": [
+          {
+            "group": "Inspector",
+            "pages": [
+              "inspector/index",
+              "inspector/cli",
+              "inspector/connection-settings",
+              "inspector/keyboard-shortcuts",
+              "inspector/command-palette",
+              "inspector/rpc-logging",
+              "inspector/integration",
+              "inspector/debugging-chatgpt-apps",
+              "inspector/self-hosting",
+              "inspector/development",
+              "inspector/changelog"
+            ]
+          }
+        ]
       }
     ]
   },

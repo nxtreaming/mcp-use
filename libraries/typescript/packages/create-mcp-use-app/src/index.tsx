@@ -418,11 +418,11 @@ program
 
           projectName = await promptForProjectName();
           console.log("");
+        }
 
-          // Only prompt for template if one wasn't provided via --template flag
-          if (!options.template) {
-            selectedTemplate = await promptForTemplate();
-          }
+        // Prompt for template if one wasn't provided via --template flag
+        if (!options.template && !selectedTemplate) {
+          selectedTemplate = await promptForTemplate();
         }
 
         // Set default template if still not selected
@@ -1038,7 +1038,10 @@ function copyDirectoryWithProcessing(
     }
 
     const srcPath = join(src, entry.name);
-    const destPath = join(dest, entry.name);
+    // Special handling: rename gitignore to .gitignore
+    // This is necessary because npm excludes .gitignore files when publishing packages
+    const destName = entry.name === "gitignore" ? ".gitignore" : entry.name;
+    const destPath = join(dest, destName);
 
     if (entry.isDirectory()) {
       mkdirSync(destPath, { recursive: true });
