@@ -398,7 +398,7 @@ NODE_ENV=production
 
 - [WorkOS AuthKit Documentation](https://workos.com/docs/authkit)
 - [WorkOS MCP Integration Guide](https://workos.com/docs/authkit/mcp)
-- [MCP OAuth Specification](https://spec.modelcontextprotocol.io/specification/architecture/#authorization-and-authentication)
+- [MCP OAuth Specification](https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization)
 - [OAuth 2.0 Dynamic Client Registration (RFC 7591)](https://tools.ietf.org/html/rfc7591)
 
 ## Support

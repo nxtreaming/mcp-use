@@ -152,8 +152,6 @@ mcp-use deploy
 mcp-use deploy --name my-server --port 8000 --open
 ```
 
-See [ENVIRONMENT.md](./ENVIRONMENT.md) for configuration options.
-
 ---
 
 ## 💡 Examples
