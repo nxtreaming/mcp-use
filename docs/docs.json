@@ -137,6 +137,13 @@
                       "python/server/notifications"
                     ]
                   },
+                  {
+                    "group": "Authentication",
+                    "icon": "shield",
+                    "pages": [
+                      "python/server/auth/bearer"
+                    ]
+                  },
                   "python/server/middleware",
                   "python/server/router",
                   "python/server/inspector",
@@ -374,6 +381,16 @@
                 "group": "Server",
                 "icon": "server",
                 "pages": [
+                  {
+                    "group": "Auth",
+                    "icon": "key",
+                    "pages": [
+                      "python/api-reference/mcp_use_server_auth_bearer",
+                      "python/api-reference/mcp_use_server_auth_dependencies",
+                      "python/api-reference/mcp_use_server_auth_middleware",
+                      "python/api-reference/mcp_use_server_auth_models"
+                    ]
+                  },
                   "python/api-reference/mcp_use_server_context",
                   {
                     "group": "Logging",
