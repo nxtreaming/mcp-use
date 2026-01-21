@@ -5,6 +5,7 @@ import "dotenv/config";
 import { spawn } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { access, mkdir, readFile, writeFile } from "node:fs/promises";
+import { createRequire } from "node:module";
 import path from "node:path";
 import open from "open";
 import { toJSONSchema } from "zod";
@@ -26,6 +27,75 @@ program
   .name("mcp-use")
   .description("Create and run MCP servers with ui resources widgets")
   .version(packageVersion);
+
+/**
+ * Helper to display all package versions
+ *
+ * @param projectPath - Optional path to user's project directory.
+ *                      When provided, resolves packages from the project's node_modules (standalone installation).
+ *                      When omitted, falls back to relative paths (monorepo development).
+ */
+function displayPackageVersions(projectPath?: string) {
+  const packages = [
+    { name: "@mcp-use/cli", relativePath: "../package.json" },
+    {
+      name: "@mcp-use/inspector",
+      relativePath: "../../inspector/package.json",
+    },
+    {
+      name: "create-mcp-use-app",
+      relativePath: "../../create-mcp-use-app/package.json",
+    },
+    {
+      name: "mcp-use",
+      relativePath: "../../mcp-use/package.json",
+      highlight: true,
+    },
+  ];
+
+  console.log(chalk.gray("mcp-use packages:"));
+
+  for (const pkg of packages) {
+    const paddedName = pkg.name.padEnd(22);
+
+    try {
+      let pkgPath: string;
+
+      if (projectPath) {
+        // Standalone installation: Try to resolve from user's project node_modules
+        try {
+          const projectRequire = createRequire(
+            path.join(projectPath, "package.json")
+          );
+          pkgPath = projectRequire.resolve(`${pkg.name}/package.json`);
+        } catch (resolveError) {
+          // Package not found in project node_modules, try relative path as fallback
+          pkgPath = path.join(__dirname, pkg.relativePath);
+        }
+      } else {
+        // Monorepo development: Use relative paths
+        pkgPath = path.join(__dirname, pkg.relativePath);
+      }
+
+      const pkgContent = readFileSync(pkgPath, "utf-8");
+      const pkgJson = JSON.parse(pkgContent);
+      const version = pkgJson.version || "unknown";
+
+      if (pkg.highlight) {
+        console.log(
+          `  ${chalk.cyan.bold(paddedName)} ${chalk.cyan.bold(`v${version}`)}`
+        );
+      } else {
+        console.log(chalk.gray(`  ${paddedName} v${version}`));
+      }
+    } catch (error) {
+      // Log debug message when package is not found (aids troubleshooting)
+      if (process.env.DEBUG || process.env.VERBOSE) {
+        console.log(chalk.dim(`  ${paddedName} (not found)`));
+      }
+    }
+  }
+}
 
 // Helper to check if port is available
 async function isPortAvailable(
@@ -323,9 +393,8 @@ async function buildWidgets(
     // No package.json or no mcpUse config, that's fine
   }
 
-  const builtWidgets: Array<{ name: string; metadata: any }> = [];
-
-  for (const entry of entries) {
+  // Helper function to build a single widget
+  const buildSingleWidget = async (entry: { name: string; path: string }) => {
     const widgetName = entry.name;
     const entryPath = entry.path.replace(/\\/g, "/");
 
@@ -726,15 +795,23 @@ export default {
         }
       }
 
-      builtWidgets.push({
-        name: widgetName,
-        metadata: widgetMetadata,
-      });
       console.log(chalk.green(`    ✓ Built ${widgetName}`));
+      return { name: widgetName, metadata: widgetMetadata };
     } catch (error) {
       console.error(chalk.red(`    ✗ Failed to build ${widgetName}:`), error);
+      return null;
     }
-  }
+  };
+
+  // Build all widgets in parallel
+  const buildResults = await Promise.all(
+    entries.map((entry) => buildSingleWidget(entry))
+  );
+
+  // Filter out failed builds (null results)
+  const builtWidgets = buildResults.filter(
+    (result): result is { name: string; metadata: any } => result !== null
+  );
 
   return builtWidgets;
 }
@@ -749,7 +826,7 @@ program
       const projectPath = path.resolve(options.path);
       const { promises: fs } = await import("node:fs");
 
-      console.log(chalk.cyan.bold(`mcp-use v${packageJson.version}`));
+      displayPackageVersions(projectPath);
 
       // Build widgets first (this generates schemas)
       const builtWidgets = await buildWidgets(projectPath);
@@ -847,7 +924,7 @@ program
       const host = options.host;
       const useHmr = options.hmr !== false;
 
-      console.log(chalk.cyan.bold(`mcp-use v${packageJson.version}`));
+      displayPackageVersions(projectPath);
 
       // Check if port is available, find alternative if needed
       if (!(await isPortAvailable(port, host))) {
@@ -861,19 +938,23 @@ program
       const serverFile = await findServerFile(projectPath);
 
       // Set environment variables for the server
+      const mcpUrl = `http://${host}:${port}`;
       process.env.PORT = String(port);
       process.env.HOST = host;
       process.env.NODE_ENV = "development";
+      process.env.MCP_URL = mcpUrl;
 
       if (!useHmr) {
         // Fallback: Use tsx watch (restarts process on changes)
         console.log(chalk.gray("HMR disabled, using tsx watch (full restart)"));
 
         const processes: any[] = [];
+        const mcpUrl = `http://${host}:${port}`;
         const env: NodeJS.ProcessEnv = {
           PORT: String(port),
           HOST: host,
           NODE_ENV: "development",
+          MCP_URL: mcpUrl,
         };
 
         // Use local tsx if available, otherwise fall back to npx

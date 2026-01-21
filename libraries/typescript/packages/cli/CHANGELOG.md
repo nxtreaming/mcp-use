@@ -1,5 +1,206 @@
 # @mcp-use/cli
 
+## 2.11.0-canary.13
+
+### Patch Changes
+
+- Updated dependencies [453661d]
+  - @mcp-use/inspector@0.16.0-canary.13
+  - mcp-use@1.14.0-canary.13
+
+## 2.11.0-canary.12
+
+### Patch Changes
+
+- f428514: Fix displayPackageVersions() to work in standalone installations
+  - Added optional projectPath parameter to resolve packages dynamically
+  - Uses createRequire() to find packages in user's node_modules (standalone installation)
+  - Falls back to relative paths for monorepo development
+  - Added debug logging when packages aren't found (via DEBUG or VERBOSE env vars)
+  - mcp-use@1.14.0-canary.12
+  - @mcp-use/inspector@0.16.0-canary.12
+
+## 2.11.0-canary.11
+
+### Patch Changes
+
+- Updated dependencies [805092b]
+  - @mcp-use/inspector@0.16.0-canary.11
+  - mcp-use@1.14.0-canary.11
+
+## 2.11.0-canary.10
+
+### Patch Changes
+
+- 945d93d: ### Inspector Enhancements
+  - **New**: Custom properties support for resources - `PropsSelect` component for dynamic prop configuration
+  - **New**: `PropsConfigDialog` for managing resource properties with AI-powered suggestions
+  - **New**: `SchemaFormField` for rendering JSON schema-based forms
+  - **New**: `usePropsLLM` hook for AI-powered property suggestions
+  - **New**: `useResourceProps` hook for managing resource props state
+  - **Enhancement**: Enhanced `JSONDisplay` with improved line wrapping and font size for better readability
+  - **Enhancement**: Collapsible description section in `ToolExecutionPanel`
+  - **Enhancement**: Integrated JSON metadata visualization in tool execution panel
+  - **Enhancement**: Enhanced `McpUIRenderer` and `OpenAIComponentRenderer` with `customProps` support
+  - **Enhancement**: Updated `ResourceResultDisplay` with dynamic property configuration
+
+  ### CLI Improvements
+  - **New**: `MCP_URL` environment variable for server URL configuration
+
+  ### MCP Proxy
+  - **Enhancement**: Improved error logging with better context
+  - **Enhancement**: Connection refused errors now logged as warnings
+  - **Enhancement**: Error responses now include target URL for easier debugging
+
+- Updated dependencies [945d93d]
+  - @mcp-use/inspector@0.16.0-canary.10
+  - mcp-use@1.14.0-canary.10
+
+## 2.11.0-canary.9
+
+### Patch Changes
+
+- 782bb3e: feat(cli): enhance CLI to display package versions during dev and build commands
+  - mcp-use@1.14.0-canary.9
+  - @mcp-use/inspector@0.16.0-canary.9
+
+## 2.11.0-canary.8
+
+### Patch Changes
+
+- Updated dependencies [e96063a]
+  - mcp-use@1.14.0-canary.8
+  - @mcp-use/inspector@0.16.0-canary.8
+
+## 2.11.0-canary.7
+
+### Patch Changes
+
+- Updated dependencies [0cfeb1d]
+- Updated dependencies [4652707]
+  - mcp-use@1.14.0-canary.7
+  - @mcp-use/inspector@0.16.0-canary.7
+
+## 2.11.0-canary.6
+
+### Patch Changes
+
+- Updated dependencies [1fb5e5e]
+- Updated dependencies [948e0ae]
+  - mcp-use@1.14.0-canary.6
+  - @mcp-use/inspector@0.16.0-canary.6
+
+## 2.11.0-canary.5
+
+### Patch Changes
+
+- da4c861: refactor(cli): streamline widget building process with parallel execution
+  - mcp-use@1.14.0-canary.5
+  - @mcp-use/inspector@0.16.0-canary.5
+
+## 2.11.0-canary.4
+
+### Patch Changes
+
+- Updated dependencies [3a94755]
+  - mcp-use@1.14.0-canary.4
+  - @mcp-use/inspector@0.16.0-canary.4
+
+## 2.11.0-canary.3
+
+### Minor Changes
+
+- 3178200: ## Dependency Updates
+
+  Updated 36 dependencies across all TypeScript packages to their latest compatible versions.
+
+  ### Major Updates
+  - **react-resizable-panels**: 3.0.6 → 4.4.1
+    - Migrated to v4 API (`PanelGroup` → `Group`, `PanelResizeHandle` → `Separator`)
+    - Updated `direction` prop to `orientation` across all inspector tabs
+    - Maintained backward compatibility through wrapper component
+
+  ### Minor & Patch Updates
+
+  **Framework & Build Tools:**
+  - @types/node: 25.0.2 → 25.0.9
+  - @types/react: 19.2.7 → 19.2.8
+  - @typescript-eslint/eslint-plugin: 8.49.0 → 8.53.1
+  - @typescript-eslint/parser: 8.49.0 → 8.53.1
+  - prettier: 3.7.4 → 3.8.0
+  - typescript-eslint: 8.49.0 → 8.53.1
+  - vite: 7.3.0 → 7.3.1
+  - vitest: 4.0.15 → 4.0.17
+
+  **Runtime Dependencies:**
+  - @hono/node-server: 1.19.7 → 1.19.9
+  - @langchain/anthropic: 1.3.0 → 1.3.10
+  - @langchain/core: 1.1.12 → 1.1.15
+  - @langchain/google-genai: 2.1.0 → 2.1.10
+  - @langchain/openai: 1.2.0 → 1.2.2
+  - @mcp-ui/client: 5.17.1 → 5.17.3
+  - @mcp-ui/server: 5.16.2 → 5.16.3
+  - posthog-js: 1.306.1 → 1.330.0
+  - posthog-node: 5.17.2 → 5.22.0
+  - ws: 8.18.3 → 8.19.0
+
+  **UI Components:**
+  - @eslint-react/eslint-plugin: 2.3.13 → 2.7.2
+  - eslint-plugin-format: 1.1.0 → 1.3.1
+  - eslint-plugin-react-refresh: 0.4.25 → 0.4.26
+  - framer-motion: 12.23.26 → 12.27.1
+  - motion: 12.23.26 → 12.27.1
+  - markdown-to-jsx: 9.3.5 → 9.5.7
+  - lucide-react: 0.561.0 → 0.562.0
+  - vite-express: 0.21.1 → 0.22.0
+
+  **Utilities:**
+  - globby: 16.0.0 → 16.1.0
+  - fs-extra: 11.3.2 → 11.3.3
+  - ink: 6.5.1 → 6.6.0
+
+  ### Removed
+  - Removed `@ai-sdk/react` from inspector (unused, only in tests)
+  - Removed `ai` from mcp-use dev dependencies (unused, only in tests/examples)
+
+### Patch Changes
+
+- Updated dependencies [3178200]
+  - @mcp-use/inspector@0.16.0-canary.3
+  - mcp-use@1.14.0-canary.3
+
+## 2.11.0-canary.2
+
+### Minor Changes
+
+- ad66391: fix: improved HMR support for widgets
+
+### Patch Changes
+
+- Updated dependencies [ad66391]
+  - @mcp-use/inspector@0.16.0-canary.2
+  - mcp-use@1.14.0-canary.2
+
+## 2.11.0-canary.1
+
+### Patch Changes
+
+- Updated dependencies [199199d]
+  - @mcp-use/inspector@0.16.0-canary.1
+  - mcp-use@1.14.0-canary.1
+
+## 2.11.0-canary.0
+
+### Minor Changes
+
+- 53fdb48: feat: allow to set serverInfo (title, name, icons, websiteUrl, description), and updated templates to have defaults
+
+### Patch Changes
+
+- Updated dependencies [53fdb48]
+  - @mcp-use/inspector@0.16.0-canary.0
+  - mcp-use@1.14.0-canary.0
+
 ## 2.10.3
 
 ### Patch Changes
