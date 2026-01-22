@@ -1,5 +1,49 @@
 # @mcp-use/cli
 
+## 2.11.2-canary.4
+
+### Patch Changes
+
+- Updated dependencies [f1171de]
+  - mcp-use@1.14.2-canary.4
+  - @mcp-use/inspector@0.16.2-canary.4
+
+## 2.11.2-canary.3
+
+### Patch Changes
+
+- Updated dependencies [6ff396a]
+  - mcp-use@1.14.2-canary.3
+  - @mcp-use/inspector@0.16.2-canary.3
+
+## 2.11.2-canary.2
+
+### Patch Changes
+
+- Updated dependencies [fb6a8f0]
+  - @mcp-use/inspector@0.16.2-canary.2
+  - mcp-use@1.14.2-canary.2
+
+## 2.11.2-canary.1
+
+### Patch Changes
+
+- e58a72d: fix: pass environment variables and deployment config during redeployment
+
+  When redeploying an existing deployment, the CLI now properly passes environment variables, build command, start command, and port configuration to the redeployment API endpoint. Previously, redeployments would not include these updated settings.
+  - mcp-use@1.14.2-canary.1
+  - @mcp-use/inspector@0.16.2-canary.1
+
+## 2.11.2-canary.0
+
+### Patch Changes
+
+- Updated dependencies [3124ca9]
+- Updated dependencies [3124ca9]
+- Updated dependencies [3124ca9]
+  - @mcp-use/inspector@0.16.2-canary.0
+  - mcp-use@1.14.2-canary.0
+
 ## 2.11.1
 
 ### Patch Changes

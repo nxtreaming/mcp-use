@@ -1,5 +1,65 @@
 # mcp-use
 
+## 1.14.2-canary.4
+
+### Patch Changes
+
+- f1171de: feat(server): enhance favicon handling and public route setup
+  - @mcp-use/cli@2.11.2-canary.4
+  - @mcp-use/inspector@0.16.2-canary.4
+
+## 1.14.2-canary.3
+
+### Patch Changes
+
+- 6ff396a: fix: add default widget domain for openai
+  - @mcp-use/cli@2.11.2-canary.3
+  - @mcp-use/inspector@0.16.2-canary.3
+
+## 1.14.2-canary.2
+
+### Patch Changes
+
+- fb6a8f0: fix: improve widget rendering and session management
+  - Fix widget iframe reload by adding timestamp query parameter to force refresh when widget data changes
+  - Add retry logic with exponential backoff for dev widget fetching to handle Vite dev server cold starts
+  - Fix default session idle timeout from 5 minutes to 1 day to prevent premature session expiration
+  - Fix session lastAccessedAt tracking to update both persistent store and in-memory map
+  - Fix \_meta merging to preserve existing fields (e.g., openai/outputTemplate) when updating tools and widgets
+  - Add support for frame_domains and redirect_domains in widget CSP metadata
+
+- Updated dependencies [fb6a8f0]
+  - @mcp-use/inspector@0.16.2-canary.2
+  - @mcp-use/cli@2.11.2-canary.2
+
+## 1.14.2-canary.1
+
+### Patch Changes
+
+- Updated dependencies [e58a72d]
+  - @mcp-use/cli@2.11.2-canary.1
+  - @mcp-use/inspector@0.16.2-canary.1
+
+## 1.14.2-canary.0
+
+### Patch Changes
+
+- 3124ca9: fix(inspector): enhance widget security headers with frame domain support
+- 3124ca9: fix(inspector): standardize proxy configuration and enhance connection handling
+  - Renamed `customHeaders` to `headers` in `InspectorDashboard` and `ServerConnectionModal` for consistency.
+  - Removed unused state management for connecting servers in `InspectorDashboard`.
+  - Improved server connection handling by introducing a `handleReconnect` function to manage reconnection attempts.
+  - Updated UI elements to reflect connection states more accurately, including hover effects and error displays.
+  - Enhanced error handling for unauthorized connections, providing clearer user feedback.
+
+  These changes aim to streamline the connection management process and improve the overall user experience in the inspector interface.
+
+- Updated dependencies [3124ca9]
+- Updated dependencies [3124ca9]
+- Updated dependencies [3124ca9]
+  - @mcp-use/inspector@0.16.2-canary.0
+  - @mcp-use/cli@2.11.2-canary.0
+
 ## 1.14.1
 
 ### Patch Changes
