@@ -105,9 +105,10 @@
               {
                 "group": "Get Started",
                 "pages": [
+                  "python/getting-started/welcome",
                   "python/getting-started/quickstart",
                   "python/getting-started/installation",
-                  "python/getting-started/configuration"
+                  "python/getting-started/updates"
                 ]
               },
               {
