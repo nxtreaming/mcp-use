@@ -442,6 +442,7 @@
               {
                 "group": "Versions",
                 "pages": [
+                  "python/changelog/1_6_0",
                   "python/changelog/1_5_2",
                   "python/changelog/1_5_0",
                   "python/changelog/1_4_1",
