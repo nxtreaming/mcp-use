@@ -107,8 +107,7 @@
                 "pages": [
                   "python/getting-started/welcome",
                   "python/getting-started/quickstart",
-                  "python/getting-started/installation",
-                  "python/getting-started/updates"
+                  "python/getting-started/installation"
                 ]
               },
               {
