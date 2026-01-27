@@ -1,5 +1,24 @@
 # @mcp-use/cli
 
+## 2.12.2-canary.1
+
+### Patch Changes
+
+- 4d3e62e: fix(cli): fix hmr
+- Updated dependencies [4d3e62e]
+  - @mcp-use/inspector@0.17.2-canary.1
+  - mcp-use@1.15.2-canary.1
+
+## 2.12.2-canary.0
+
+### Patch Changes
+
+- eb777a4: Fix HMR file watcher exhausting inotify limits by properly ignoring node_modules
+
+  The HMR file watcher was attempting to watch files inside `node_modules/` despite having ignore patterns configured, which exhausted the inotify watch limit (ENOSPC errors) in containerized environments.
+  - mcp-use@1.15.2-canary.0
+  - @mcp-use/inspector@0.17.2-canary.0
+
 ## 2.12.1
 
 ### Patch Changes
