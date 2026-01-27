@@ -87,7 +87,7 @@
             "icon": "",
             "pages": [
               "home/mcp101",
-              "typescript/server/creating-apps-sdk-server",
+              "typescript/server/creating-mcp-apps-server",
               "guides/chatgpt-apps-flow"
             ]
           }
@@ -559,8 +559,9 @@
                   {
                     "group": "UI Widgets",
                     "icon": "app-window-mac",
-                    "tag": "Apps SDK",
+                    "tag": "Cross-Compatible",
                     "pages": [
+                      "typescript/server/mcp-apps",
                       "typescript/server/ui-widgets",
                       "typescript/server/widget-components/usewidget",
                       "typescript/server/widget-components/mcpuseprovider",

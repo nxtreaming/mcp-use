@@ -1,5 +1,41 @@
 # create-mcp-use-app
 
+## 0.12.0-canary.5
+
+### Patch Changes
+
+- a078aa9: fix: mcp server landing now shows the external url instead of the internal
+
+## 0.12.0-canary.4
+
+### Patch Changes
+
+- e910f64: chore: fix vulnerabilities in deps
+
+## 0.12.0-canary.3
+
+### Patch Changes
+
+- e4ca98e: chore: trigger canary release
+
+## 0.12.0-canary.2
+
+### Patch Changes
+
+- 67823ea: fix: rename template to mcp-apps
+
+## 0.12.0-canary.1
+
+### Patch Changes
+
+- 08d3b3a: fix docs
+
+## 0.12.0-canary.0
+
+### Minor Changes
+
+- 523d9d1: feat: changed templates to use mcp-apps and alias apps-sdk => mcp-apps
+
 ## 0.11.1
 
 ### Patch Changes
