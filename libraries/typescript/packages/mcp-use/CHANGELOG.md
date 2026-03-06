@@ -1,5 +1,66 @@
 # mcp-use
 
+## 1.21.1-canary.6
+
+### Patch Changes
+
+- Updated dependencies [3cae276]
+  - @mcp-use/inspector@0.24.1-canary.6
+  - @mcp-use/cli@2.18.0-canary.6
+
+## 1.21.1-canary.5
+
+### Patch Changes
+
+- fb91a61: fix(stream-manager): remove console warn for session disconnetion in dev mode to avoid noise caused by hmr
+  - @mcp-use/cli@2.18.0-canary.5
+  - @mcp-use/inspector@0.24.1-canary.5
+
+## 1.21.1-canary.4
+
+### Patch Changes
+
+- bdeaadb: fix(server): session recovery after restart returns 400 and distributed SSE stream routing
+  - Fixed #1133: session recovery after server deploy/restart no longer returns `400 Bad Request: Server not initialized`. The transport's internal `_initialized` flag is now set during session recovery so reconnecting clients work seamlessly.
+  - Integrated `StreamManager` into the server's notification and request flow so that standalone SSE messages (notifications, server-to-client requests) are routed through Redis Pub/Sub in distributed/load-balanced deployments.
+  - Added distributed request/response correlation: server-to-client requests (sampling, elicitation, roots listing) are now correctly routed back to the originating server instance when the client's response POST lands on a different server.
+  - Made `RedisStreamManager.create()` idempotent to handle SSE reconnects without duplicate Pub/Sub subscriptions.
+  - @mcp-use/cli@2.18.0-canary.4
+  - @mcp-use/inspector@0.24.1-canary.4
+
+## 1.21.1-canary.3
+
+### Patch Changes
+
+- Updated dependencies [53fb21a]
+  - @mcp-use/cli@2.18.0-canary.3
+  - @mcp-use/inspector@0.24.1-canary.3
+
+## 1.21.1-canary.2
+
+### Patch Changes
+
+- Updated dependencies [c5d5a75]
+  - @mcp-use/cli@2.18.0-canary.2
+  - @mcp-use/inspector@0.24.1-canary.2
+
+## 1.21.1-canary.1
+
+### Patch Changes
+
+- Updated dependencies [3e3767e]
+  - @mcp-use/inspector@0.24.1-canary.1
+  - @mcp-use/cli@2.17.1-canary.1
+
+## 1.21.1-canary.0
+
+### Patch Changes
+
+- Updated dependencies [f0a872a]
+- Updated dependencies [ef8a0cf]
+  - @mcp-use/inspector@0.24.1-canary.0
+  - @mcp-use/cli@2.17.1-canary.0
+
 ## 1.21.0
 
 ### Minor Changes

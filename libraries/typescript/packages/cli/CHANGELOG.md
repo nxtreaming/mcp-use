@@ -1,5 +1,67 @@
 # @mcp-use/cli
 
+## 2.18.0-canary.6
+
+### Patch Changes
+
+- Updated dependencies [3cae276]
+  - @mcp-use/inspector@0.24.1-canary.6
+  - mcp-use@1.21.1-canary.6
+
+## 2.18.0-canary.5
+
+### Patch Changes
+
+- Updated dependencies [fb91a61]
+  - mcp-use@1.21.1-canary.5
+  - @mcp-use/inspector@0.24.1-canary.5
+
+## 2.18.0-canary.4
+
+### Patch Changes
+
+- Updated dependencies [bdeaadb]
+  - mcp-use@1.21.1-canary.4
+  - @mcp-use/inspector@0.24.1-canary.4
+
+## 2.18.0-canary.3
+
+### Patch Changes
+
+- 53fb21a: feat(build): run tool registry type generation during build
+
+  `mcp-use build` now generates `.mcp-use/tool-registry.d.ts` before TypeScript compilation when a server file exists. This fixes intermittent TS errors (e.g. `useCallTool` args typed as `null`) when `postinstall` typegen runs before source files are present (e.g. in Docker multi-stage builds). The `generate-types` command now uses the same shared helper.
+  - mcp-use@1.21.1-canary.3
+  - @mcp-use/inspector@0.24.1-canary.3
+
+## 2.18.0-canary.2
+
+### Minor Changes
+
+- c5d5a75: feat(deploy): add --root-dir option for monorepo support
+
+### Patch Changes
+
+- mcp-use@1.21.1-canary.2
+- @mcp-use/inspector@0.24.1-canary.2
+
+## 2.17.1-canary.1
+
+### Patch Changes
+
+- Updated dependencies [3e3767e]
+  - @mcp-use/inspector@0.24.1-canary.1
+  - mcp-use@1.21.1-canary.1
+
+## 2.17.1-canary.0
+
+### Patch Changes
+
+- Updated dependencies [f0a872a]
+- Updated dependencies [ef8a0cf]
+  - @mcp-use/inspector@0.24.1-canary.0
+  - mcp-use@1.21.1-canary.0
+
 ## 2.17.0
 
 ### Minor Changes
