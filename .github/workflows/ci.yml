@@ -549,6 +549,8 @@ jobs:
     needs: python-lint
     name: "python-agent/${{ matrix.test }}"
     runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
     strategy:
       fail-fast: false
       matrix:
@@ -571,6 +573,7 @@ jobs:
         run: |
           uv pip install --system .[dev,anthropic,openai,search,e2b]
       - name: Run agent test for ${{ matrix.test }}
+        if: env.OPENAI_API_KEY != ''
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           MCP_USE_ANONYMIZED_TELEMETRY: false
@@ -653,6 +656,8 @@ jobs:
     needs: typescript-lint
     name: "typescript/mcp-use (node-${{ matrix.node-version }})"
     runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
     strategy:
       matrix:
         node-version: [20, 22]
@@ -680,6 +685,7 @@ jobs:
           MCP_USE_ANONYMIZED_TELEMETRY: false
         run: pnpm --filter mcp-use --if-present test:unit
       - name: Run mcp-use Agent Integration Tests
+        if: env.OPENAI_API_KEY != ''
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           LANGFUSE_PUBLIC_KEY: ${{ secrets.LANGFUSE_PUBLIC_KEY }}
