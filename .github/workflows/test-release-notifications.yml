@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Version to test with (e.g. 1.6.0)"
+        description: "Version to test with (e.g. 1.7.0)"
         required: true
-        default: "1.6.0"
+        default: "1.7.0"
 
 permissions:
   contents: read
@@ -42,7 +42,7 @@ jobs:
       - name: Create discussion
         uses: abirismyname/create-discussion@v2.1.0
         with:
-          title: "🚀 Python v${{ github.event.inputs.version }} Released [TEST]"
+          title: "🚀 Python v${{ github.event.inputs.version }} Released"
           body-filepath: discussion_body.md
           repository-id: R_kgDOOQKbDA
           category-id: DIC_kwDOOQKbDM4CrC8-
@@ -63,7 +63,7 @@ jobs:
           RELEASE_BODY=$(gh release view "$TAG_NAME" --json body -q '.body' | head -c 1800)
 
           PAYLOAD=$(jq -n \
-            --arg title "Python v${VERSION} [TEST]" \
+            --arg title "Python v${VERSION}" \
             --arg url "$RELEASE_URL" \
             --arg desc "$RELEASE_BODY" \
             '{embeds: [{title: $title, url: $url, description: $desc, color: 5814783}]}')
