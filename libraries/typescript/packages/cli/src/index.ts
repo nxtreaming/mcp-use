@@ -7,6 +7,7 @@ import { readFileSync } from "node:fs";
 import { access, mkdir, readFile, writeFile } from "node:fs/promises";
 import { createRequire } from "node:module";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 import open from "open";
 import { viteSingleFile } from "vite-plugin-singlefile";
 import { toJSONSchema } from "zod";
@@ -325,7 +326,7 @@ async function findServerFile(projectPath: string): Promise<string> {
 async function generateToolRegistryTypesForServer(
   projectPath: string,
   serverFileRelative: string
-): Promise<void> {
+): Promise<boolean> {
   const serverFile = path.join(projectPath, serverFileRelative);
   const serverFileExists = await access(serverFile)
     .then(() => true)
@@ -343,7 +344,7 @@ async function generateToolRegistryTypesForServer(
     (globalThis as any).__mcpUseLastServer = undefined;
 
     const { tsImport } = await import("tsx/esm/api");
-    await tsImport(serverFile, {
+    await tsImport(pathToFileURL(serverFile).href, {
       parentURL: import.meta.url,
       tsconfig: path.join(projectPath, "tsconfig.json"),
     });
@@ -364,7 +365,11 @@ async function generateToolRegistryTypesForServer(
       throw new Error("generateToolRegistryTypes not found in mcp-use package");
     }
 
-    await generateToolRegistryTypes(server.registrations.tools, projectPath);
+    const success = await generateToolRegistryTypes(
+      server.registrations.tools,
+      projectPath
+    );
+    return success;
   } finally {
     (globalThis as any).__mcpUseHmrMode = previousHmrMode ?? false;
   }
@@ -959,6 +964,139 @@ export default {
   return builtWidgets;
 }
 
+/**
+ * Collect TypeScript files from tsconfig include/exclude patterns using only
+ * Node.js built-ins (no globby/fast-glob, which break in ESM bundles).
+ */
+async function collectTsFiles(
+  projectPath: string,
+  includePatterns: string[],
+  excludePatterns: string[]
+): Promise<string[]> {
+  const { promises: fs } = await import("node:fs");
+
+  // Separate literal files from directory globs
+  const literalFiles: string[] = [];
+  const dirPrefixes: string[] = [];
+
+  for (const pattern of includePatterns) {
+    if (pattern.includes("*")) {
+      // Extract directory prefix before the first wildcard
+      const prefix = pattern.split("*")[0].replace(/\/+$/, "") || ".";
+      dirPrefixes.push(prefix);
+    } else {
+      literalFiles.push(pattern);
+    }
+  }
+
+  const files: string[] = [];
+
+  // Add literal files that exist and are .ts/.tsx (not .d.ts)
+  for (const file of literalFiles) {
+    if (/\.tsx?$/.test(file) && !file.endsWith(".d.ts")) {
+      try {
+        await access(path.join(projectPath, file));
+        files.push(file);
+      } catch {
+        // File doesn't exist, skip
+      }
+    }
+  }
+
+  // Recursively scan directories
+  const excludeSet = new Set(excludePatterns.map((e) => e.replace(/\*+/g, "")));
+  for (const prefix of dirPrefixes) {
+    const dirPath = path.join(projectPath, prefix);
+    try {
+      const entries = await fs.readdir(dirPath, { recursive: true });
+      for (const entry of entries) {
+        const entryStr = String(entry);
+        const rel = path.join(prefix, entryStr);
+        if (
+          /\.tsx?$/.test(entryStr) &&
+          !entryStr.endsWith(".d.ts") &&
+          !excludeSet.has(rel.split(path.sep)[0])
+        ) {
+          files.push(rel);
+        }
+      }
+    } catch {
+      // Directory doesn't exist, skip
+    }
+  }
+
+  return files;
+}
+
+/**
+ * Transpile TypeScript files using esbuild instead of tsc.
+ * esbuild strips types without analyzing them, so it cannot OOM on complex types.
+ * Reads the project's tsconfig.json to determine source files, outDir, and compiler options.
+ */
+async function transpileWithEsbuild(projectPath: string): Promise<void> {
+  const esbuild = await import("esbuild");
+  const { promises: fs } = await import("node:fs");
+
+  const tsconfigPath = path.join(projectPath, "tsconfig.json");
+  let tsconfig: any = {};
+  try {
+    const raw = await fs.readFile(tsconfigPath, "utf-8");
+    tsconfig = JSON.parse(raw);
+  } catch {
+    // No tsconfig — use defaults
+  }
+
+  const compilerOptions = tsconfig.compilerOptions || {};
+  const outDir = compilerOptions.outDir || "./dist";
+  const includePatterns = tsconfig.include || ["**/*.ts", "**/*.tsx"];
+  const excludePatterns = tsconfig.exclude || ["node_modules", "dist"];
+
+  const files = await collectTsFiles(
+    projectPath,
+    includePatterns,
+    excludePatterns
+  );
+
+  if (files.length === 0) {
+    console.log(chalk.yellow("  No TypeScript files found to transpile."));
+    return;
+  }
+
+  // Map tsconfig jsx setting to esbuild equivalent
+  const jsxMap: Record<string, "automatic" | "transform" | "preserve"> = {
+    "react-jsx": "automatic",
+    "react-jsxdev": "automatic",
+    react: "transform",
+    preserve: "preserve",
+  };
+  const jsx = jsxMap[compilerOptions.jsx] || undefined;
+
+  const target = (compilerOptions.target || "ES2022").toLowerCase();
+
+  const moduleStr = (compilerOptions.module || "ESNext").toLowerCase();
+  const format: "esm" | "cjs" = moduleStr.includes("commonjs") ? "cjs" : "esm";
+
+  // Match tsc's rootDir behavior: when set, esbuild's outbase should map to it
+  // so that `src/index.ts` → `dist/index.js` (not `dist/src/index.js`).
+  const outbase = compilerOptions.rootDir
+    ? path.resolve(projectPath, compilerOptions.rootDir)
+    : projectPath;
+
+  await esbuild.build({
+    entryPoints: files.map((f) => path.join(projectPath, f)),
+    outdir: path.join(projectPath, outDir),
+    outbase,
+    bundle: false,
+    format,
+    target,
+    jsx,
+    sourcemap: compilerOptions.sourceMap ?? true,
+    tsconfig: tsconfigPath,
+    platform: "node",
+    logLevel: "warning",
+  });
+}
+
 program
   .command("build")
   .description("Build TypeScript and MCP UI widgets")
@@ -969,6 +1107,7 @@ program
     "Inline all JS/CSS into HTML (required for VS Code MCP Apps)"
   )
   .option("--no-inline", "Keep JS/CSS as separate files (default)")
+  .option("--no-typecheck", "Skip TypeScript type checking (faster builds)")
   .action(async (options) => {
     try {
       const projectPath = path.resolve(options.path);
@@ -992,26 +1131,57 @@ program
 
       if (sourceServerFile) {
         console.log(chalk.gray("Generating tool registry types..."));
-        await generateToolRegistryTypesForServer(projectPath, sourceServerFile);
-        console.log(chalk.green("✓ Tool registry types generated"));
+        const typeGenOk = await generateToolRegistryTypesForServer(
+          projectPath,
+          sourceServerFile
+        );
+        if (typeGenOk) {
+          console.log(chalk.green("✓ Tool registry types generated"));
+        } else {
+          console.log(
+            chalk.yellow(
+              "⚠ Tool registry type generation had errors (non-blocking)"
+            )
+          );
+        }
       }
 
-      // Then run tsc (now schemas are available for import)
-      // Use the locally installed typescript binary directly rather than npx to
-      // prevent npx from auto-installing the unrelated `tsc@2.0.4` package when
-      // typescript is not found in node_modules.
-      // Raise the Node.js heap limit for tsc to avoid OOM on projects with
-      // heavy transitive types (React, Zod v4, etc.).
+      // Transpile TypeScript with esbuild (fast, no OOM on complex types).
+      // Type checking is a separate step via tsc --noEmit (skippable with --no-typecheck).
       console.log(chalk.gray("Building TypeScript..."));
-      await runCommand(
-        "node",
-        [
-          "--max-old-space-size=4096",
-          path.join(projectPath, "node_modules", "typescript", "bin", "tsc"),
-        ],
-        projectPath
-      ).promise;
+      await transpileWithEsbuild(projectPath);
       console.log(chalk.green("✓ TypeScript build complete!"));
+
+      // Type-check with tsc --noEmit (separate from transpilation).
+      // Uses the locally installed typescript binary directly rather than npx to
+      // prevent npx from auto-installing the unrelated `tsc@2.0.4` package.
+      if (options.typecheck !== false) {
+        console.log(chalk.gray("Type checking..."));
+        try {
+          await runCommand(
+            "node",
+            [
+              "--max-old-space-size=4096",
+              path.join(
+                projectPath,
+                "node_modules",
+                "typescript",
+                "bin",
+                "tsc"
+              ),
+              "--noEmit",
+            ],
+            projectPath
+          ).promise;
+          console.log(chalk.green("✓ Type check passed!"));
+        } catch {
+          console.error(
+            chalk.red("✗ Type check failed.") +
+              chalk.gray(" Use --no-typecheck to skip.")
+          );
+          process.exit(1);
+        }
+      }
 
       // Determine where the entry point was compiled to
       let entryPoint: string | undefined;
@@ -1351,7 +1521,7 @@ program
 
       const chokidarModule = await import("chokidar");
       const chokidar = (chokidarModule as any).default || chokidarModule;
-      const { pathToFileURL, fileURLToPath } = await import("node:url");
+      const { fileURLToPath } = await import("node:url");
       const { createRequire } = await import("node:module");
 
       // Try to get tsx's tsImport function for TypeScript support
@@ -1404,7 +1574,7 @@ program
           // tsImport handles TypeScript compilation and does not cache loaded modules,
           // so the entire dependency tree is re-evaluated on each call.
           // The ?t= timestamp is kept as a safety measure for edge cases.
-          await tsImport(`${serverFilePath}?t=${Date.now()}`, {
+          await tsImport(`${serverFileUrl}?t=${Date.now()}`, {
             parentURL: import.meta.url,
             onImport: (file: string) => {
               const filePath = file.startsWith("file://")
@@ -2098,8 +2268,17 @@ program
 
     try {
       console.log(chalk.blue("Generating tool registry types..."));
-      await generateToolRegistryTypesForServer(projectPath, options.server);
-      console.log(chalk.green("✓ Tool registry types generated successfully"));
+      const success = await generateToolRegistryTypesForServer(
+        projectPath,
+        options.server
+      );
+      if (success) {
+        console.log(
+          chalk.green("✓ Tool registry types generated successfully")
+        );
+      } else {
+        console.log(chalk.yellow("⚠ Tool registry type generation had errors"));
+      }
       process.exit(0);
     } catch (error) {
       console.error(
