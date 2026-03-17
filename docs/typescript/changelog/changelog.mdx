@@ -20,14 +20,15 @@ tag: "New"
 - **Update**: Updated create-mcp-use-app to v0.14.6
 </Update>
 
-<Update label="v1.21.2" description="March 2026">
-  ## Inspector Proxy Fix for Embedded Servers
-  Patch release fixing inspector auto-connect when served from MCP server (Python, etc.).
+<Update label="v1.21.4" description="March 2026">
+  ## Request Context, CLI Build & README Fixes
+  Patch release fixing request context propagation, CLI build hang, and stale monorepo references.
 
-- **Fix** (@mcp-use/inspector): Skip proxy when inspector is served from the MCP server itself — auto-connect no longer routes through missing `/inspector/api/proxy` on embedded servers
-- **Fix** (@mcp-use/inspector): Detect proxy availability via runtime config injection; disable autoProxyFallback when no proxy is available
-- **Update**: Updated @mcp-use/inspector to v0.24.2
-- **Update**: Updated @mcp-use/cli to v2.18.1
+- **Fix**: `ctx.auth` and other request context properties were `undefined` in tool callbacks; `mountMcp()` now wraps `transport.handleRequest()` with `runWithContext()` so `getRequestContext()` is populated
+- **Fix** (@mcp-use/cli): `mcp-use build` no longer hangs — add `process.exit(0)` on success (tsImport creates active handles)
+- **Fix**: Update stale mcp-use-ts references in README badges, image URLs, eslint config to mcp-use monorepo
+- **Update**: Updated @mcp-use/inspector to v0.24.4
+- **Update**: Updated @mcp-use/cli to v2.18.3
 </Update>
 
 <Update label="v1.21.3" description="March 2026">
@@ -39,15 +40,14 @@ tag: "New"
 - **Update**: Updated @mcp-use/cli to v2.18.2
 </Update>
 
-<Update label="v1.21.4" description="March 2026">
-  ## Request Context, CLI Build & README Fixes
-  Patch release fixing request context propagation, CLI build hang, and stale monorepo references.
+<Update label="v1.21.2" description="March 2026">
+  ## Inspector Proxy Fix for Embedded Servers
+  Patch release fixing inspector auto-connect when served from MCP server (Python, etc.).
 
-- **Fix**: `ctx.auth` and other request context properties were `undefined` in tool callbacks; `mountMcp()` now wraps `transport.handleRequest()` with `runWithContext()` so `getRequestContext()` is populated
-- **Fix** (@mcp-use/cli): `mcp-use build` no longer hangs — add `process.exit(0)` on success (tsImport creates active handles)
-- **Fix**: Update stale mcp-use-ts references in README badges, image URLs, eslint config to mcp-use monorepo
-- **Update**: Updated @mcp-use/inspector to v0.24.4
-- **Update**: Updated @mcp-use/cli to v2.18.3
+- **Fix** (@mcp-use/inspector): Skip proxy when inspector is served from the MCP server itself — auto-connect no longer routes through missing `/inspector/api/proxy` on embedded servers
+- **Fix** (@mcp-use/inspector): Detect proxy availability via runtime config injection; disable autoProxyFallback when no proxy is available
+- **Update**: Updated @mcp-use/inspector to v0.24.2
+- **Update**: Updated @mcp-use/cli to v2.18.1
 </Update>
 
 <Update label="v1.21.1" description="March 2026">
@@ -63,16 +63,27 @@ tag: "New"
 - **Update**: Updated create-mcp-use-app to v0.14.4
 </Update>
 
-<Update label="v1.20.1" description="February 2026">
-  ## Widget Status Texts & CSP Handling
-  Patch release with widget metadata enhancements and CSP improvements.
+<Update label="v1.21.0" description="March 2026">
+  <Frame>
+    <img src="https://mcp-use.com/api/og/release?v=1.21.0&title=Proxy%20Servers%20%26%20Client%20Completion&date=2026-03&lang=typescript" alt="Release 1.21.0" />
+  </Frame>
+  ## Proxy Servers & Client Completion
+  Minor release with server composition, client-side completion, user context, and Express middleware types.
 
-- **New**: `invoking` and `invoked` properties in widget metadata for customizable status messages during tool execution
-- **Breaking**: McpUseProvider no longer includes BrowserRouter; add it explicitly if your widget uses react-router
-- **Enhancement**: MCPAppsDebugControls CSP mode violation indicators; sandbox-proxy strips existing CSP meta tags before injecting permissive CSP
-- **Fix** (create-mcp-use-app): Unify logo display across all CLI entry paths
-- **Update**: Updated @mcp-use/inspector to v0.22.1
-- **Update**: Updated @mcp-use/cli to v2.15.1
+- **New**: `MCPServer.proxy()` for composing multiple MCP servers into a single aggregator — automatic orchestration, schema translation, namespacing, list-changed multiplexing
+- **New**: Client-side completion support — `complete()` on BaseConnector, MCPSession, and `useMcp`; `refreshResourceTemplates()`; prompt argument and resource template URI autocomplete
+- **New**: `ctx.client.user()` for per-invocation end-user metadata (`subject`, `conversationId`) from tools/call params
+- **Enhancement**: `ctx.client.supportsApps()` now correctly returns true for MCP Apps clients (fixed ClientCapabilitiesSchema `extensions` stripping)
+- **Enhancement**: `autoReconnect` options — configurable health check interval, reconnection delay, timeout via `reconnectionOptions`
+- **Enhancement**: `sendFollowUpMessage` accepts `MessageContentBlock` arrays (text, image, resource blocks) per SEP-1865
+- **Enhancement**: Host info and capabilities — `hostInfo`, `hostCapabilities` in `useWidget`; `getHostInfo`, `getHostCapabilities` on `McpAppsBridge`
+- **Fix**: Express middleware types — proper TypeScript types for `server.use()` with Express middleware (auto-detected and adapted)
+- **Fix**: Session isolation — `findSessionContext` no longer falls back to arbitrary session, preventing metadata leakage
+- **Fix**: Remove deprecated `@types/tar`; update tar to latest (cli, create-mcp-use-app)
+- **Update**: Updated @mcp-use/inspector to v0.24.0
+- **Update**: Updated @mcp-use/cli to v2.17.0
+- **Update**: Updated create-mcp-use-app to v0.14.3
+- **Documentation**: Per-server elicitation and sampling callbacks examples; proxy servers section
 </Update>
 
 <Update label="v1.20.5" description="February 2026">
@@ -112,37 +123,16 @@ tag: "New"
 - **Update**: Updated @mcp-use/cli to v2.15.2
 </Update>
 
-<Update label="v1.19.3" description="February 2026">
-  ## CLI Skills & Template Updates
-  Patch release with CLI skills commands and create-mcp-use-app template improvements.
+<Update label="v1.20.1" description="February 2026">
+  ## Widget Status Texts & CSP Handling
+  Patch release with widget metadata enhancements and CSP improvements.
 
-- **New** (@mcp-use/cli): `mcp-use skills add` and `mcp-use skills install` commands to install AI agent skills (Cursor, Claude Code, Codex) from the mcp-use repository
-- **Enhancement** (create-mcp-use-app): Add @types/react and @types/react-dom to template devDependencies
-- **Update**: Updated @mcp-use/inspector to v0.21.1
-- **Update**: Updated @mcp-use/cli to v2.14.0
-</Update>
-
-<Update label="v1.21.0" description="March 2026">
-  <Frame>
-    <img src="https://mcp-use.com/api/og/release?v=1.21.0&title=Proxy%20Servers%20%26%20Client%20Completion&date=2026-03&lang=typescript" alt="Release 1.21.0" />
-  </Frame>
-  ## Proxy Servers & Client Completion
-  Minor release with server composition, client-side completion, user context, and Express middleware types.
-
-- **New**: `MCPServer.proxy()` for composing multiple MCP servers into a single aggregator — automatic orchestration, schema translation, namespacing, list-changed multiplexing
-- **New**: Client-side completion support — `complete()` on BaseConnector, MCPSession, and `useMcp`; `refreshResourceTemplates()`; prompt argument and resource template URI autocomplete
-- **New**: `ctx.client.user()` for per-invocation end-user metadata (`subject`, `conversationId`) from tools/call params
-- **Enhancement**: `ctx.client.supportsApps()` now correctly returns true for MCP Apps clients (fixed ClientCapabilitiesSchema `extensions` stripping)
-- **Enhancement**: `autoReconnect` options — configurable health check interval, reconnection delay, timeout via `reconnectionOptions`
-- **Enhancement**: `sendFollowUpMessage` accepts `MessageContentBlock` arrays (text, image, resource blocks) per SEP-1865
-- **Enhancement**: Host info and capabilities — `hostInfo`, `hostCapabilities` in `useWidget`; `getHostInfo`, `getHostCapabilities` on `McpAppsBridge`
-- **Fix**: Express middleware types — proper TypeScript types for `server.use()` with Express middleware (auto-detected and adapted)
-- **Fix**: Session isolation — `findSessionContext` no longer falls back to arbitrary session, preventing metadata leakage
-- **Fix**: Remove deprecated `@types/tar`; update tar to latest (cli, create-mcp-use-app)
-- **Update**: Updated @mcp-use/inspector to v0.24.0
-- **Update**: Updated @mcp-use/cli to v2.17.0
-- **Update**: Updated create-mcp-use-app to v0.14.3
-- **Documentation**: Per-server elicitation and sampling callbacks examples; proxy servers section
+- **New**: `invoking` and `invoked` properties in widget metadata for customizable status messages during tool execution
+- **Breaking**: McpUseProvider no longer includes BrowserRouter; add it explicitly if your widget uses react-router
+- **Enhancement**: MCPAppsDebugControls CSP mode violation indicators; sandbox-proxy strips existing CSP meta tags before injecting permissive CSP
+- **Fix** (create-mcp-use-app): Unify logo display across all CLI entry paths
+- **Update**: Updated @mcp-use/inspector to v0.22.1
+- **Update**: Updated @mcp-use/cli to v2.15.1
 </Update>
 
 <Update label="v1.20.0" description="February 2026">
@@ -168,6 +158,16 @@ tag: "New"
 - **Fix**: WorkOS subdomain config to accept full AuthKit domain (e.g., `name.authkit.app`)
 - **Update**: Updated @mcp-use/inspector to v0.22.0
 - **Update**: Updated @mcp-use/cli to v2.15.0
+</Update>
+
+<Update label="v1.19.3" description="February 2026">
+  ## CLI Skills & Template Updates
+  Patch release with CLI skills commands and create-mcp-use-app template improvements.
+
+- **New** (@mcp-use/cli): `mcp-use skills add` and `mcp-use skills install` commands to install AI agent skills (Cursor, Claude Code, Codex) from the mcp-use repository
+- **Enhancement** (create-mcp-use-app): Add @types/react and @types/react-dom to template devDependencies
+- **Update**: Updated @mcp-use/inspector to v0.21.1
+- **Update**: Updated @mcp-use/cli to v2.14.0
 </Update>
 
 <Update label="v1.19.2" description="February 2026">
